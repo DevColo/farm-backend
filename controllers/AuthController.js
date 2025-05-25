@@ -4,7 +4,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { User, Role, UserRole } = require('../models'); // adjust imports as needed
-const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 exports.login = async (req, res) => {
   const { email, password } = req.body || {};

@@ -6,13 +6,26 @@ const { Pasture } = require('../models')
 // Create pasture
 exports.createPasture = async (req, res) => {
   try {
-    const { name, country, active } = req.body
+    const { pasture, country, description, status } = req.body
     const userId = req.user.id
 
+    // Check if a pasture with the same name exists in the same country
+    const existingPasture = await Pasture.findOne({
+      where: {
+        pasture,
+        country,
+      }
+    })
+
+    if (existingPasture) {
+      return res.status(400).json({ error: 'Pasture already exists in this country.' })
+    }
+
     const newPasture = await Pasture.create({
-      name,
+      pasture,
       country,
-      active,
+      description,
+      status,
       user_id: userId
     })
 

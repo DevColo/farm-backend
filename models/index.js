@@ -17,7 +17,7 @@ const sequelize = new Sequelize(
 const User = require('./User')(sequelize);
 const Role = require('./Role')(sequelize);
 const Permission = require('./Permission')(sequelize);
-const Pasture = require('./Pasture')(sequelize);
+const Pasture = require('./Pasture')(sequelize, Sequelize.DataTypes);
 
 
 // Define relationships

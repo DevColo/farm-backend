@@ -20,9 +20,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     }
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    }
   }, {
     tableName: 'pastures',
     timestamps: true,
+    underscored: true,
   });
 
   Pasture.associate = function(models) {
