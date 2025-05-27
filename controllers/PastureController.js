@@ -1,7 +1,8 @@
 /*
 * controllers/PastureController
 */
-const { Pasture } = require('../models')
+const { Pasture, User } = require('../models')
+const { Op } = require('sequelize')
 
 // Create pasture
 exports.createPasture = async (req, res) => {
@@ -35,10 +36,18 @@ exports.createPasture = async (req, res) => {
   }
 }
 
-// Get all pastures
+// // Get all pastures
 exports.getAllPastures = async (req, res) => {
   try {
-    const pastures = await Pasture.findAll()
+    const pastures = await Pasture.findAll({
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'email', 'first_name', 'last_name'],
+        },
+      ],
+    })
     res.json(pastures)
   } catch (error) {
     res.status(500).json({ error: error.message })
@@ -62,14 +71,38 @@ exports.updatePasture = async (req, res) => {
     const pasture = await Pasture.findByPk(req.params.id)
     if (!pasture) return res.status(404).json({ error: 'Pasture not found' })
 
-    const { name, country, active } = req.body
-    await pasture.update({ name, country, active })
+    const { pasture: pastureName, country, description, status } = req.body
+    const userId = req.user.id
+
+    // Check if another pasture with the same name and country exists (exclude current)
+    const existingPasture = await Pasture.findOne({
+      where: {
+        pasture: pastureName,
+        country,
+        id: { [Op.ne]: pasture.id }
+      }
+    })
+
+    if (existingPasture) {
+      return res.status(400).json({ error: 'Pasture already exists in this country.' })
+    }
+
+    await pasture.update({
+      pasture: pastureName,
+      country,
+      description,
+      status,
+      updated_by: userId,
+      updated_at: new Date()
+    })
 
     res.json(pasture)
   } catch (error) {
     res.status(500).json({ error: error.message })
   }
 }
+
+
 
 // Delete pasture by ID
 exports.deletePasture = async (req, res) => {

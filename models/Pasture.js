@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     status: {
       type: DataTypes.STRING,
       allowNull: false,
-    }
+    },
     user_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -30,12 +30,12 @@ module.exports = (sequelize, DataTypes) => {
     underscored: true,
   });
 
-  Pasture.associate = function(models) {
+  Pasture.associate = (models) => {
     Pasture.belongsTo(models.User, {
       foreignKey: 'user_id',
-      onDelete: 'CASCADE'
-    });
-  };
+      as: 'user'
+    })
+  }
 
   return Pasture;
 };

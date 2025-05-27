@@ -32,5 +32,10 @@ module.exports = (sequelize) => {
     }
   });
 
+  User.associate = (models) => {
+  User.hasMany(models.Pasture, { foreignKey: 'user_id', as: 'pastures' })
+}
+
+
   return User;
 };

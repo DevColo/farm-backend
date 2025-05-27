@@ -19,6 +19,9 @@ app.use('/api/login', require('./routes/auth'));
 const pastureRoutes = require('./routes/pastures');
 app.use('/api/pastures', authenticate, pastureRoutes);
 
+const cowRoutes = require('./routes/cows');
+app.use('/api/cows', authenticate, cowRoutes);
+
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

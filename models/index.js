@@ -1,5 +1,5 @@
 // models/index.js
-const { Sequelize } = require('sequelize');
+const { Sequelize, DataTypes } = require('sequelize');
 require('dotenv').config();
 
 const sequelize = new Sequelize(
@@ -13,24 +13,30 @@ const sequelize = new Sequelize(
   }
 );
 
-// Register models via factory pattern
-const User = require('./User')(sequelize);
-const Role = require('./Role')(sequelize);
-const Permission = require('./Permission')(sequelize);
-const Pasture = require('./Pasture')(sequelize, Sequelize.DataTypes);
+// Initialize models
+const db = {}
 
+db.sequelize = sequelize
+db.Sequelize = Sequelize
+
+db.User = require('./User')(sequelize, DataTypes)
+db.Role = require('./Role')(sequelize, DataTypes)
+db.Permission = require('./Permission')(sequelize, DataTypes)
+db.Pasture = require('./Pasture')(sequelize, DataTypes)
+db.Cow = require('./Cow')(sequelize, DataTypes)
 
 // Define relationships
-User.belongsToMany(Role, { through: 'user_roles' });
-Role.belongsToMany(User, { through: 'user_roles' });
+db.User.belongsToMany(db.Role, { through: 'user_roles' })
+db.Role.belongsToMany(db.User, { through: 'user_roles' })
 
-Role.belongsToMany(Permission, { through: 'role_permissions' });
-Permission.belongsToMany(Role, { through: 'role_permissions' });
+db.Role.belongsToMany(db.Permission, { through: 'role_permissions' })
+db.Permission.belongsToMany(db.Role, { through: 'role_permissions' })
 
-module.exports = {
-  sequelize,
-  User,
-  Role,
-  Permission,
-  Pasture
-};
+// Register model associations if they exist
+Object.values(db).forEach((model) => {
+  if (model.associate) {
+    model.associate(db)
+  }
+})
+
+module.exports = db
