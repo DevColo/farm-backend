@@ -1,6 +1,8 @@
 // controllers/CowController.js
 
 const { Cow, Pasture, User } = require('../models')
+const fs = require('fs')
+const { Op } = require('sequelize')
 
 // Create cow
 exports.createCow = async (req, res) => {
@@ -14,7 +16,6 @@ exports.createCow = async (req, res) => {
       herd,
       from_location,
       description,
-      image,
       pasture_id,
       status
     } = req.body
@@ -25,12 +26,18 @@ exports.createCow = async (req, res) => {
     const existingCow = await Cow.findOne({
       where: {
         ear_tag,
-        pasture_id
+        // optionally pasture_id
       }
     })
 
     if (existingCow) {
       return res.status(400).json({ error: 'Cow with this ear tag already exists in this pasture.' })
+    }
+
+    // If file uploaded, get path
+    let imagePath = null
+    if (req.file) {
+      imagePath = req.file.path // This is the server path to the file, e.g., 'uploads/cows/1234567890.jpg'
     }
 
     const newCow = await Cow.create({
@@ -42,9 +49,9 @@ exports.createCow = async (req, res) => {
       herd,
       from_location,
       description,
-      image,
+      image: imagePath,
       pasture_id,
-      status
+      status,
       user_id: userId,
     })
 
@@ -118,25 +125,56 @@ exports.updateCow = async (req, res) => {
     if (!cow) return res.status(404).json({ error: 'Cow not found' })
 
     const {
+      name,
       ear_tag,
       date_of_birth,
       type,
       breed,
       herd,
+      from_location,
       description,
       pasture_id,
       status
     } = req.body
 
+    // Check if another cow already has this ear_tag
+    const existingCow = await Cow.findOne({
+      where: {
+        ear_tag,
+        id: { [Op.ne]: cow.id } // Exclude current cow by ID
+      }
+    })
+
+    if (existingCow) {
+      return res.status(400).json({ error: 'Another cow with this ear tag already exists.' })
+    }
+
+    let imagePath = cow.image
+
+    if (req.body.remove_image === '1' && cow.image && fs.existsSync(cow.image)) {
+      fs.unlinkSync(cow.image)
+      imagePath = null
+    }
+
+    if (req.file) {
+      if (cow.image && fs.existsSync(cow.image)) {
+        fs.unlinkSync(cow.image)
+      }
+      imagePath = req.file.path
+    }
+
     await cow.update({
+      name,
       ear_tag,
       date_of_birth,
       type,
       breed,
       herd,
+      from_location,
       description,
       pasture_id,
       status,
+      image: imagePath,
       updated_by: req.user.id
     })
 

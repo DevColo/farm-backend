@@ -2,7 +2,7 @@
   "development": {
     "username": "root",
     "password": "project360",
-    "database": "farmdb",
+    "database": "farm_db",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },
