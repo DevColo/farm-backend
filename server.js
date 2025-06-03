@@ -23,8 +23,10 @@ app.use(express.json());
 app.use('/api/login', require('./routes/auth'));
 
 // Protected routes (require authentication)
+app.use('/api/dashboard', authenticate, require('./routes/dashboard'));
 app.use('/api/pastures', authenticate, require('./routes/pastures'));
 app.use('/api/cows', authenticate, require('./routes/cows'));
+app.use('/api/daily-milk-records', authenticate, require('./routes/dailyMilkRecords'));
 
 //  Access uploaded files
 app.use('/uploads', express.static('uploads'));
