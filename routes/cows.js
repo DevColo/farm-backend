@@ -10,5 +10,9 @@ router.put('/:id', upload.single('image'), CowController.updateCow);
 router.get('/', CowController.getAllCows);
 router.get('/:id', CowController.getCowById);
 router.delete('/:id', CowController.deleteCow);
+router.get('/by-pasture/:id', CowController.getPastureCows);
+router.get('/by-breed/:breed', CowController.getBreedCows);
+router.get('/by-gender/:gender', CowController.getGenderCows);
+router.get('/by-class/:class', CowController.getClassCows);
 
 module.exports = router;

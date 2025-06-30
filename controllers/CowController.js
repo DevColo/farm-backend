@@ -196,3 +196,170 @@ exports.deleteCow = async (req, res) => {
     res.status(500).json({ error: error.message })
   }
 }
+
+// Get all cows with pasture and user info based on the pasture id
+exports.getPastureCows = async (req, res) => {
+  try {
+    const pastureId = req.params.id;
+
+    // Get pasture info
+    const pasture = await Pasture.findOne({
+      where: { id: pastureId },
+      attributes: ['id', 'pasture']
+    });
+
+    if (!pasture) {
+      return res.status(404).json({ error: 'Pasture not found' });
+    }
+
+    // Get cows in that pasture
+    const cows = await Cow.findAll({
+      where: { pasture_id: pastureId },
+      include: [
+        {
+          model: User,
+          as: 'owner',
+          attributes: ['id', 'first_name']
+        },
+        {
+          model: User,
+          as: 'updatedBy',
+          attributes: ['id', 'first_name']
+        }
+      ]
+    });
+
+    // Send structured response
+    res.json({
+      pasture,
+      cows
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Get all cows with pasture and user info based on the breed
+exports.getBreedCows = async (req, res) => {
+  try {
+    const breed = req.params.breed;
+
+    // Get cows in that pasture
+    const cows = await Cow.findAll({
+      where: { breed: breed },
+      include: [
+        {
+          model: Pasture,
+          as: 'pasture',
+          attributes: ['id', 'pasture']
+        },
+        {
+          model: User,
+          as: 'owner',
+          attributes: ['id', 'first_name']
+        },
+        {
+          model: User,
+          as: 'updatedBy',
+          attributes: ['id', 'first_name']
+        }
+      ]
+    });
+
+    // Send structured response
+    res.json({
+      cows
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+  // Get all cows with pasture and user info based on the gender
+exports.getGenderCows = async (req, res) => {
+  try {
+    const type = req.params.gender;
+
+    // Get cows in that pasture
+    const cows = await Cow.findAll({
+      where: { type: type },
+      include: [
+        {
+          model: Pasture,
+          as: 'pasture',
+          attributes: ['id', 'pasture']
+        },
+        {
+          model: User,
+          as: 'owner',
+          attributes: ['id', 'first_name']
+        },
+        {
+          model: User,
+          as: 'updatedBy',
+          attributes: ['id', 'first_name']
+        }
+      ]
+    });
+
+    // Send structured response
+    res.json({
+      cows
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+  // Get all cows with pasture and user info based on the class
+exports.getClassCows = async (req, res) => {
+  try {
+    const ageClass = req.params.class;
+console.log(ageClass);
+    // Fetch all cows with necessary data
+    const cows = await Cow.findAll({
+      include: [
+        {
+          model: Pasture,
+          as: 'pasture',
+          attributes: ['id', 'pasture']
+        },
+        {
+          model: User,
+          as: 'owner',
+          attributes: ['id', 'first_name']
+        },
+        {
+          model: User,
+          as: 'updatedBy',
+          attributes: ['id', 'first_name']
+        }
+      ]
+    });
+
+    // Filter based on age class
+    const filteredCows = cows.filter(cow => {
+      if (!cow.date_of_birth) return false;
+
+      const dob = new Date(cow.date_of_birth);
+      const now = new Date();
+      let months = (now.getFullYear() - dob.getFullYear()) * 12 + (now.getMonth() - dob.getMonth());
+
+      if (now.getDate() < dob.getDate()) months--;
+
+      const ageClass = months >= 1 && months <= 11
+          ? 'Calf'
+          : months >= 12 && months <= 23
+          ? 'Yearling'
+          : cow.given_birth == '1'
+          ? 'Heifer'
+          : 'Adult';
+
+      return ageClass === req.params.class;
+    });
+
+    res.json({ cows: filteredCows });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

@@ -88,7 +88,11 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: Sequelize.fn('NOW')
-      }
+      },
+      given_birth: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
     });
   },
 

@@ -25,6 +25,7 @@ db.Permission = require('./Permission')(sequelize, DataTypes)
 db.Pasture = require('./Pasture')(sequelize, DataTypes)
 db.Cow = require('./Cow')(sequelize, DataTypes)
 db.DailyMilkRecord = require('./DailyMilkRecord')(sequelize, DataTypes)
+db.Feeding = require('./Feeding')(sequelize, DataTypes)
 
 // Define relationships
 db.User.belongsToMany(db.Role, { through: 'user_roles' })
