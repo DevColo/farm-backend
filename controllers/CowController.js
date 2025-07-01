@@ -1,6 +1,6 @@
 // controllers/CowController.js
 
-const { Cow, Pasture, User } = require('../models')
+const { Cow, Pasture, User, Feeding, Medication } = require('../models')
 const fs = require('fs')
 const { Op } = require('sequelize')
 
@@ -12,6 +12,8 @@ exports.createCow = async (req, res) => {
       ear_tag,
       date_of_birth,
       type,
+      male_type,
+      given_birth,
       breed,
       herd,
       from_location,
@@ -45,6 +47,8 @@ exports.createCow = async (req, res) => {
       ear_tag,
       date_of_birth,
       type,
+      male_type,
+      given_birth,
       breed,
       herd,
       from_location,
@@ -69,25 +73,44 @@ exports.getAllCows = async (req, res) => {
         {
           model: Pasture,
           as: 'pasture',
-          attributes: ['id', 'pasture']
+          attributes: ['id', 'pasture'],
         },
         {
           model: User,
           as: 'owner',
-          attributes: ['id', 'first_name']
+          attributes: ['id', 'first_name'],
         },
         {
           model: User,
           as: 'updatedBy',
-          attributes: ['id', 'first_name']
-        }
-      ]
-    })
-    res.json(cows)
+          attributes: ['id', 'first_name'],
+        },
+      ],
+    });
+
+    const cowsWithDetails = await Promise.all(
+      cows.map(async (cow) => {
+        const feedings = await Feeding.findAll({
+          where: { pasture_id: cow.pasture_id },
+        });
+
+        const medications = await Medication.findAll({
+          where: { cow_id: cow.id },
+        });
+
+        return {
+          ...cow.toJSON(),
+          feedings,
+          medications,
+        };
+      })
+    );
+
+    res.json(cowsWithDetails);
   } catch (error) {
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ error: error.message });
   }
-}
+};
 
 // Get cow by ID
 exports.getCowById = async (req, res) => {
@@ -129,6 +152,8 @@ exports.updateCow = async (req, res) => {
       ear_tag,
       date_of_birth,
       type,
+      male_type,
+      given_birth,
       breed,
       herd,
       from_location,
@@ -168,6 +193,8 @@ exports.updateCow = async (req, res) => {
       ear_tag,
       date_of_birth,
       type,
+      male_type,
+      given_birth,
       breed,
       herd,
       from_location,

@@ -1,8 +1,8 @@
 /*
 * controllers/PastureController
 */
-const { Pasture, User } = require('../models')
-const { Op } = require('sequelize')
+const { Pasture, User, Cow } = require('../models')
+const { Op, Sequelize } = require('sequelize')
 
 // Create pasture
 exports.createPasture = async (req, res) => {
@@ -40,19 +40,56 @@ exports.createPasture = async (req, res) => {
 exports.getAllPastures = async (req, res) => {
   try {
     const pastures = await Pasture.findAll({
+      attributes: {
+        include: [
+          [
+            Sequelize.fn('COUNT', Sequelize.col('cows.id')),
+            'cow_count'
+          ]
+        ]
+      },
       include: [
         {
           model: User,
           as: 'user',
           attributes: ['id', 'email', 'first_name', 'last_name'],
         },
+        {
+          model: Cow,
+          as: 'cows',
+          attributes: [], // skip cow details, just counting
+          required: false,
+        }
       ],
-    })
-    res.json(pastures)
+      group: ['Pasture.id', 'user.id'],
+      order: [['id', 'ASC']]
+    });
+
+    res.json(pastures);
   } catch (error) {
-    res.status(500).json({ error: error.message })
+    console.error(error);
+    res.status(500).json({ error: error.message });
   }
-}
+};
+
+
+
+// exports.getAllPastures = async (req, res) => {
+//   try {
+//     const pastures = await Pasture.findAll({
+//       include: [
+//         {
+//           model: User,
+//           as: 'user',
+//           attributes: ['id', 'email', 'first_name', 'last_name'],
+//         },
+//       ],
+//     })
+//     res.json(pastures)
+//   } catch (error) {
+//     res.status(500).json({ error: error.message })
+//   }
+// }
 
 // Get pasture by ID
 exports.getPastureById = async (req, res) => {

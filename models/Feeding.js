@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATEONLY,
       allowNull: false,
     },
-    cow_id: {
+    pasture_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
@@ -32,9 +32,9 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   Feeding.associate = (models) => {
-    Feeding.belongsTo(models.Cow, {
-      foreignKey: 'cow_id',
-      as: 'cow',
+    Feeding.belongsTo(models.Pasture, {
+      foreignKey: 'pasture_id',
+      as: 'pasture',
     });
 
     Feeding.belongsTo(models.User, {

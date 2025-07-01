@@ -34,7 +34,8 @@ module.exports = (sequelize, DataTypes) => {
     Pasture.belongsTo(models.User, {
       foreignKey: 'user_id',
       as: 'user'
-    })
+    });
+    Pasture.hasMany(models.Cow, { foreignKey: 'pasture_id', as: 'cows' });
   }
 
   return Pasture;

@@ -21,16 +21,16 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      cow_id: {
-        type: Sequelize.INTEGER,
-        allowNull: true,
-        references: {
-          model: 'cows',
-          key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL',
-      },
+      // cow_id: {
+      //   type: Sequelize.INTEGER,
+      //   allowNull: true,
+      //   references: {
+      //     model: 'cows',
+      //     key: 'id'
+      //   },
+      //   onUpdate: 'CASCADE',
+      //   onDelete: 'SET NULL',
+      // },
       user_id: {
         type: Sequelize.INTEGER,
         allowNull: true,

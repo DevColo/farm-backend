@@ -4,8 +4,8 @@ const UserController = require('../controllers/UserController');
 const upload = require('../middleware/userImageUpload');
 
 // Add multer middleware for file upload in create and update routes
-router.post('/', upload.single('image'), UserController.createUser);
-router.put('/:id', upload.single('image'), UserController.updateUser);
+router.post('/', upload.single('photo'), UserController.createUser);
+router.put('/:id', upload.single('photo'), UserController.updateUser);
 
 router.get('/', UserController.getAllUsers);
 router.get('/:id', UserController.getUserById);

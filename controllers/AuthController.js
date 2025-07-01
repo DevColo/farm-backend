@@ -24,7 +24,7 @@ exports.login = async (req, res) => {
     const passwordMatch = await bcrypt.compare(password, user.password);
 
     if (!passwordMatch) {
-      return res.status(401).json({ message: password,hash: user.password,passwordMatch: passwordMatch });
+      return res.status(401).json({ message: 'You entered a wrong password, try again.',hash: user.password,passwordMatch: passwordMatch });
     }
 
     // Get user roles (assuming associations are set)

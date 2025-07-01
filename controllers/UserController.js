@@ -3,6 +3,7 @@
 const { Cow, Pasture, User } = require('../models')
 const fs = require('fs')
 const { Op } = require('sequelize')
+const bcrypt = require('bcryptjs')
 
 // Create cow
 exports.createUser = async (req, res) => {
@@ -83,6 +84,8 @@ exports.getUserById = async (req, res) => {
 }
 
 // Update User by ID
+
+
 exports.updateUser = async (req, res) => {
   try {
     const user = await User.findByPk(req.params.id)
@@ -95,6 +98,7 @@ exports.updateUser = async (req, res) => {
       phone,
       email,
       address,
+      password,  // get password from body
     } = req.body
 
     // Check if another user already has this email
@@ -123,7 +127,7 @@ exports.updateUser = async (req, res) => {
       imagePath = req.file.path
     }
 
-    await user.update({
+    const updatedData = {
       first_name,
       other_name,
       last_name,
@@ -131,13 +135,75 @@ exports.updateUser = async (req, res) => {
       email,
       address,
       photo: imagePath,
-    })
+    }
+    // If password is submitted and not empty, hash and update it
+    if (password && password.trim() !== '') {
+      updatedData.password = password
+    }
+
+    await user.update(updatedData)
 
     res.json(user)
   } catch (error) {
     res.status(500).json({ error: error.message })
   }
 }
+
+// exports.updateUser = async (req, res) => {
+//   try {
+//     const user = await User.findByPk(req.params.id)
+//     if (!user) return res.status(404).json({ error: 'User not found' })
+
+//     const {
+//       first_name,
+//       other_name,
+//       last_name,
+//       phone,
+//       email,
+//       address,
+//     } = req.body
+
+//     // Check if another user already has this email
+//     const existingUser = await User.findOne({
+//       where: {
+//         email,
+//         id: { [Op.ne]: user.id }
+//       }
+//     })
+
+//     if (existingUser) {
+//       return res.status(400).json({ error: 'Another user with this email already exists.' })
+//     }
+
+//     let imagePath = user.photo
+
+//     if (req.body.remove_image === '1' && user.photo && fs.existsSync(user.photo)) {
+//       fs.unlinkSync(user.photo)
+//       imagePath = null
+//     }
+
+//     if (req.file) {
+//       if (user.photo && fs.existsSync(user.photo)) {
+//         fs.unlinkSync(user.photo)
+//       }
+//       imagePath = req.file.path
+//     }
+
+//     await user.update({
+//       first_name,
+//       other_name,
+//       last_name,
+//       phone,
+//       email,
+//       address,
+//       photo: imagePath,
+//     })
+
+//     res.json(user)
+//   } catch (error) {
+//     res.status(500).json({ error: error.message })
+//   }
+// }
 
 // Delete User by ID
 exports.deleteUser = async (req, res) => {

@@ -4,14 +4,14 @@ const { Op } = require('sequelize')
 // Create Feeding
 exports.createFeeding = async (req, res) => {
   try {
-    const { food, quantity, fed_date, cow_id } = req.body
+    const { food, quantity, fed_date, pasture_id } = req.body
     const userId = req.user.id
 
     const newFeeding = await Feeding.create({
       food,
       quantity,
       fed_date,
-      cow_id,
+      pasture_id,
       user_id: userId,
     })
 
@@ -27,9 +27,9 @@ exports.getFeedings = async (req, res) => {
     const feedings = await Feeding.findAll({
       include: [
         {
-          model: Cow,
-          as: 'cow',
-          attributes: ['id', 'name', 'ear_tag']
+          model: Pasture,
+          as: 'pasture',
+          attributes: ['id', 'pasture']
         },
         {
           model: User,

@@ -11,7 +11,7 @@ exports.createMilkRecord = async (req, res) => {
       morning_qty,
       evening_qty,
       record_date,
-      cow_id,
+      // cow_id,
     } = req.body
 
     const userId = req.user.id
@@ -19,22 +19,19 @@ exports.createMilkRecord = async (req, res) => {
     // Check if a Daily Milk Record with same Cow exists
     const existingDailyMilkRecord = await DailyMilkRecord.findOne({
       where: {
-        morning_qty,
-        evening_qty,
         record_date,
-        cow_id,
       }
     })
 
     if (existingDailyMilkRecord) {
-      return res.status(400).json({ error: 'Daily Milk Record for this Cow exists, try another.' })
+      return res.status(400).json({ error: 'Daily Milk Record for this date already exists, try another.' })
     }
 
     const newDailyMilkRecord = await DailyMilkRecord.create({
       morning_qty,
       evening_qty,
       record_date,
-      cow_id,
+      // cow_id,
       user_id: userId,
     })
 
@@ -49,11 +46,11 @@ exports.getMilkRecords = async (req, res) => {
   try {
     const milkRecords = await DailyMilkRecord.findAll({
       include: [
-        {
-          model: Cow,
-          as: 'cow',
-          attributes: ['id', 'name', 'ear_tag']
-        },
+        // {
+        //   model: Cow,
+        //   as: 'cow',
+        //   attributes: ['id', 'name', 'ear_tag']
+        // },
         {
           model: User,
           as: 'owner',
@@ -111,28 +108,25 @@ exports.updateMilkRecord = async (req, res) => {
       morning_qty,
       evening_qty,
       record_date,
-      cow_id
+      // cow_id
     } = req.body
 
-    // const existingDailyMilkRecord = await DailyMilkRecord.findOne({
-    //   where: {
-    //     morning_qty,
-    //     evening_qty,
-    //     record_date,
-    //     cow_id,
-    //     id: { [Op.ne]: milkRecord.id }
-    //   }
-    // })
+    const existingDailyMilkRecord = await DailyMilkRecord.findOne({
+      where: {
+        record_date,
+        id: { [Op.ne]: milkRecord.id }
+      }
+    })
 
-    // if (existingDailyMilkRecord) {
-    //   return res.status(400).json({ error: 'Another cow with this ear tag already exists.' })
-    // }
+    if (existingDailyMilkRecord) {
+      return res.status(400).json({ error: 'Milk record for this date already exists.' })
+    }
 
     await milkRecord.update({
       morning_qty,
       evening_qty,
       record_date,
-      cow_id,
+      // cow_id,
       updated_by: req.user.id
     })
 

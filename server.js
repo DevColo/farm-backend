@@ -28,6 +28,7 @@ app.use('/api/pastures', authenticate, require('./routes/pastures'));
 app.use('/api/cows', authenticate, require('./routes/cows'));
 app.use('/api/daily-milk-records', authenticate, require('./routes/dailyMilkRecords'));
 app.use('/api/feedings', authenticate, require('./routes/feedings'));
+app.use('/api/medications', authenticate, require('./routes/medications'));
 app.use('/api/users', authenticate, require('./routes/users'));
 
 //  Access uploaded files

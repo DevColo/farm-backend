@@ -13,10 +13,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATEONLY,
       allowNull: false,
     },
-    cow_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
+    // cow_id: {
+    //   type: DataTypes.INTEGER,
+    //   allowNull: false,
+    // },
     user_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -32,10 +32,10 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   DailyMilkRecord.associate = (models) => {
-    DailyMilkRecord.belongsTo(models.Cow, {
-      foreignKey: 'cow_id',
-      as: 'cow',
-    });
+    // DailyMilkRecord.belongsTo(models.Cow, {
+    //   foreignKey: 'cow_id',
+    //   as: 'cow',
+    // });
 
     DailyMilkRecord.belongsTo(models.User, {
       foreignKey: 'user_id',

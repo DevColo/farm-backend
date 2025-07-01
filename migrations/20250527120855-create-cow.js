@@ -91,7 +91,11 @@ module.exports = {
       },
       given_birth: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
+      },
+      male_typ: {
+        type: Sequelize.STRING,
+        allowNull: true,
       },
     });
   },
