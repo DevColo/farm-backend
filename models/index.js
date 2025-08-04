@@ -43,6 +43,14 @@ db.Permission.belongsToMany(db.Role, { through: 'role_permissions' })
 db.Food.hasMany(db.Feeding, { foreignKey: 'food_id' });
 db.Feeding.belongsTo(db.Food, { foreignKey: 'food_id' });
 
+// A Customer can have many MilkSales
+db.Customer.hasMany(db.MilkSales, { foreignKey: 'customer_id' });
+db.MilkSales.belongsTo(db.Customer, { foreignKey: 'customer_id' });
+
+// A Customer can have many CowSales
+db.Customer.hasMany(db.CowSales, { foreignKey: 'customer_id' });
+db.CowSales.belongsTo(db.Customer, { foreignKey: 'customer_id' });
+
 // Register model associations if they exist
 Object.values(db).forEach((model) => {
   if (model.associate) {

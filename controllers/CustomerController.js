@@ -1,7 +1,7 @@
 /*
 * controllers/CustomerController
 */
-const { Customer, User, DailyMilkRecord } = require('../models')
+const { Customer, User, MilkSales, CowSales } = require('../models')
 const { Op } = require('sequelize')
 
 // Create Customer
@@ -39,10 +39,14 @@ exports.getCustomers = async (req, res) => {
           as: 'updatedBy',
           attributes: ['id', 'first_name'],
         },
-        // {
-        //   model: DailyMilkRecord,
-        //   required: false,
-        // }
+        {
+          model: MilkSales,
+          required: false,
+        },
+        {
+          model: CowSales,
+          required: false,
+        }
       ]
     });
 
@@ -66,6 +70,14 @@ exports.getCustomerById = async (req, res) => {
           model: User,
           as: 'updatedBy',
           attributes: ['id', 'first_name']
+        },
+         {
+          model: MilkSales,
+          required: false,
+        },
+        {
+          model: CowSales,
+          required: false,
         }
       ]
     })
