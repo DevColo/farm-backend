@@ -7,7 +7,7 @@ router.post('/', FeedingController.createFeeding);
 router.put('/:id', FeedingController.updateFeeding);
 
 router.get('/', FeedingController.getFeedings);
-router.get('/:id', FeedingController.getCowById);
+router.get('/:id', FeedingController.getFeedingById);
 router.delete('/:id', FeedingController.deleteFeeding);
 
 module.exports = router;

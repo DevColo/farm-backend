@@ -1,44 +1,50 @@
 'use strict';
 
 module.exports = {
-  async up (queryInterface, Sequelize) {
-    await queryInterface.createTable('daily_milk_records', {
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('maternities', {
       id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
+        allowNull: false,
         autoIncrement: true,
-        allowNull: false
+        primaryKey: true,
+        type: Sequelize.INTEGER,
       },
-      morning_qty: {
-        type: Sequelize.STRING,
+      cow_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'cows',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
+      bull_id: {
+        type: Sequelize.INTEGER,
         allowNull: true,
+        references: {
+          model: 'cows',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
       },
-      evening_qty: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      record_date: {
+      pregnancy_status: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      unit_price: {
+      mating_date: {
+        type: Sequelize.DATEONLY,
+        allowNull: false,
+      },
+      birth_date: {
+        type: Sequelize.DATEONLY,
+        allowNull: true,
+      },
+      calf_amount: {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      currency: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      // cow_id: {
-      //   type: Sequelize.INTEGER,
-      //   allowNull: true,
-      //   references: {
-      //     model: 'cows',
-      //     key: 'id'
-      //   },
-      //   onUpdate: 'CASCADE',
-      //   onDelete: 'SET NULL',
-      // },
       user_id: {
         type: Sequelize.INTEGER,
         allowNull: true,
@@ -72,8 +78,7 @@ module.exports = {
     });
   },
 
-  async down (queryInterface, Sequelize) {
-    await queryInterface.dropTable('daily_milk_records');
-  }
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('maternities');
+  },
 };
-

@@ -27,9 +27,15 @@ app.use('/api/dashboard', authenticate, require('./routes/dashboard'));
 app.use('/api/pastures', authenticate, require('./routes/pastures'));
 app.use('/api/cows', authenticate, require('./routes/cows'));
 app.use('/api/daily-milk-records', authenticate, require('./routes/dailyMilkRecords'));
+app.use('/api/foods', authenticate, require('./routes/foods'));
 app.use('/api/feedings', authenticate, require('./routes/feedings'));
 app.use('/api/medications', authenticate, require('./routes/medications'));
 app.use('/api/users', authenticate, require('./routes/users'));
+app.use('/api/roles', authenticate, require('./routes/roles'));
+app.use('/api/maternities', authenticate, require('./routes/maternities'));
+app.use('/api/customers', authenticate, require('./routes/customers'));
+app.use('/api/milk-sales', authenticate, require('./routes/milkSales'));
+app.use('/api/cow-sales', authenticate, require('./routes/cowSales'));
 
 //  Access uploaded files
 app.use('/uploads', express.static('uploads'));

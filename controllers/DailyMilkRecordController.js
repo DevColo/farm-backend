@@ -11,6 +11,8 @@ exports.createMilkRecord = async (req, res) => {
       morning_qty,
       evening_qty,
       record_date,
+      unit_price,
+      currency,
       // cow_id,
     } = req.body
 
@@ -31,6 +33,8 @@ exports.createMilkRecord = async (req, res) => {
       morning_qty,
       evening_qty,
       record_date,
+      unit_price,
+      currency,
       // cow_id,
       user_id: userId,
     })
@@ -108,6 +112,8 @@ exports.updateMilkRecord = async (req, res) => {
       morning_qty,
       evening_qty,
       record_date,
+      unit_price,
+      currency,
       // cow_id
     } = req.body
 
@@ -126,6 +132,8 @@ exports.updateMilkRecord = async (req, res) => {
       morning_qty,
       evening_qty,
       record_date,
+      unit_price,
+      currency,
       // cow_id,
       updated_by: req.user.id
     })

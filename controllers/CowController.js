@@ -1,6 +1,6 @@
 // controllers/CowController.js
 
-const { Cow, Pasture, User, Feeding, Medication } = require('../models')
+const { Cow, Pasture, User, Feeding, Medication, Food, Maternity } = require('../models')
 const fs = require('fs')
 const { Op } = require('sequelize')
 
@@ -69,6 +69,7 @@ exports.createCow = async (req, res) => {
 exports.getAllCows = async (req, res) => {
   try {
     const cows = await Cow.findAll({
+      where: { status: 1 },
       include: [
         {
           model: Pasture,
@@ -92,7 +93,15 @@ exports.getAllCows = async (req, res) => {
       cows.map(async (cow) => {
         const feedings = await Feeding.findAll({
           where: { pasture_id: cow.pasture_id },
-        });
+          include: [
+            {
+              model: Food,
+              as: 'food',
+              attributes: ['id', 'food'],
+            },
+          ],
+        },
+        );
 
         const medications = await Medication.findAll({
           where: { cow_id: cow.id },
@@ -133,13 +142,71 @@ exports.getCowById = async (req, res) => {
           attributes: ['id', 'first_name']
         }
       ]
-    })
-    if (!cow) return res.status(404).json({ error: 'Cow not found' })
-    res.json(cow)
+    });
+
+    if (!cow) return res.status(404).json({ error: 'Cow not found' });
+
+    // Append Feeding Record
+    const feedings = await Feeding.findAll({
+      where: { pasture_id: cow.pasture_id },
+      include: [
+        {
+          model: Food,
+          as: 'food',
+          attributes: ['id', 'food'],
+        },
+      ],
+    });
+
+    // Append Medication Record
+    const medications = await Medication.findAll({
+      where: { cow_id: cow.id },
+    });
+
+    // Determine the association to include based on cow type
+    // Check cow type and fetch maternities accordingly
+    let maternities;
+
+    if (cow.type === 'Female') {
+      maternities = await Maternity.findAll({
+        where: { cow_id: cow.id },
+        include: [
+          {
+            model: Cow,
+            as: 'bull',
+            attributes: ['id', 'ear_tag'],
+          },
+        ],
+      });
+    } else if (cow.type === 'Male') {
+      maternities = await Maternity.findAll({
+        where: { bull_id: cow.id },
+        include: [
+          {
+            model: Cow,
+            as: 'cow',
+            attributes: ['id', 'ear_tag'],
+          },
+        ],
+      });
+    } else {
+      maternities = []; // In case the type is undefined or doesn't match
+    }
+
+
+    const cowWithDetails = {
+      ...cow.toJSON(),
+      feedings,
+      medications,
+      maternities
+    };
+
+    res.json(cowWithDetails);
   } catch (error) {
-    res.status(500).json({ error: error.message })
+    res.status(500).json({ error: error.message });
   }
-}
+};
+
 
 // Update cow by ID
 exports.updateCow = async (req, res) => {
@@ -232,6 +299,7 @@ exports.getPastureCows = async (req, res) => {
     // Get pasture info
     const pasture = await Pasture.findOne({
       where: { id: pastureId },
+      where: { status: 1 },
       attributes: ['id', 'pasture']
     });
 
@@ -274,6 +342,7 @@ exports.getBreedCows = async (req, res) => {
     // Get cows in that pasture
     const cows = await Cow.findAll({
       where: { breed: breed },
+      where: { status: 1 },
       include: [
         {
           model: Pasture,
@@ -310,6 +379,7 @@ exports.getGenderCows = async (req, res) => {
     // Get cows in that pasture
     const cows = await Cow.findAll({
       where: { type: type },
+      where: { status: 1 },
       include: [
         {
           model: Pasture,
@@ -342,9 +412,8 @@ exports.getGenderCows = async (req, res) => {
 exports.getClassCows = async (req, res) => {
   try {
     const ageClass = req.params.class;
-console.log(ageClass);
-    // Fetch all cows with necessary data
     const cows = await Cow.findAll({
+      where: { status: 1 },
       include: [
         {
           model: Pasture,

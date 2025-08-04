@@ -25,8 +25,13 @@ db.Permission = require('./Permission')(sequelize, DataTypes)
 db.Pasture = require('./Pasture')(sequelize, DataTypes)
 db.Cow = require('./Cow')(sequelize, DataTypes)
 db.DailyMilkRecord = require('./DailyMilkRecord')(sequelize, DataTypes)
+db.Food = require('./Food')(sequelize, DataTypes)
 db.Feeding = require('./Feeding')(sequelize, DataTypes)
 db.Medication = require('./Medication')(sequelize, DataTypes)
+db.Maternity = require('./Maternity')(sequelize, DataTypes)
+db.Customer = require('./Customer')(sequelize, DataTypes)
+db.MilkSales = require('./MilkSales')(sequelize, DataTypes)
+db.CowSales = require('./CowSales')(sequelize, DataTypes)
 
 // Define relationships
 db.User.belongsToMany(db.Role, { through: 'user_roles' })
@@ -34,6 +39,9 @@ db.Role.belongsToMany(db.User, { through: 'user_roles' })
 
 db.Role.belongsToMany(db.Permission, { through: 'role_permissions' })
 db.Permission.belongsToMany(db.Role, { through: 'role_permissions' })
+
+db.Food.hasMany(db.Feeding, { foreignKey: 'food_id' });
+db.Feeding.belongsTo(db.Food, { foreignKey: 'food_id' });
 
 // Register model associations if they exist
 Object.values(db).forEach((model) => {

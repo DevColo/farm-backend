@@ -1,17 +1,17 @@
-// models/DailyMilkRecord.js
+// models/Food.js
 module.exports = (sequelize, DataTypes) => {
-  const DailyMilkRecord = sequelize.define('DailyMilkRecord', {
-    morning_qty: {
+  const Food = sequelize.define('Food', {
+    food: {
       type: DataTypes.STRING,
-      allowNull: true,
-    },
-    evening_qty: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    record_date: {
-      type: DataTypes.DATEONLY,
       allowNull: false,
+    },
+    quantity: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     user_id: {
       type: DataTypes.INTEGER,
@@ -22,22 +22,22 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
     },
   }, {
-    tableName: 'daily_milk_records',
+    tableName: 'foods',
     timestamps: true,
     underscored: true,
   });
 
-  DailyMilkRecord.associate = (models) => {
-    DailyMilkRecord.belongsTo(models.User, {
+  Food.associate = (models) => {
+    Food.belongsTo(models.User, {
       foreignKey: 'user_id',
       as: 'owner',
     });
 
-    DailyMilkRecord.belongsTo(models.User, {
+    Food.belongsTo(models.User, {
       foreignKey: 'updated_by',
       as: 'updatedBy',
     });
   };
 
-  return DailyMilkRecord;
+  return Food;
 };

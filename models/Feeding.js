@@ -1,9 +1,9 @@
 // models/Feeding.js
 module.exports = (sequelize, DataTypes) => {
   const Feeding = sequelize.define('Feeding', {
-    food: {
-      type: DataTypes.STRING,
-      allowNull: true,
+    food_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
     quantity: {
       type: DataTypes.STRING,
@@ -32,6 +32,11 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   Feeding.associate = (models) => {
+    Feeding.belongsTo(models.Food, {
+      foreignKey: 'food_id',
+      as: 'food',
+    });
+
     Feeding.belongsTo(models.Pasture, {
       foreignKey: 'pasture_id',
       as: 'pasture',

@@ -1,14 +1,14 @@
-const { Feeding, Cow, Pasture, User } = require('../models')
+const { Feeding, Cow, Pasture, User, Food } = require('../models')
 const { Op } = require('sequelize')
 
 // Create Feeding
 exports.createFeeding = async (req, res) => {
   try {
-    const { food, quantity, fed_date, pasture_id } = req.body
+    const { food_id, quantity, fed_date, pasture_id } = req.body
     const userId = req.user.id
 
     const newFeeding = await Feeding.create({
-      food,
+      food_id,
       quantity,
       fed_date,
       pasture_id,
@@ -26,6 +26,11 @@ exports.getFeedings = async (req, res) => {
   try {
     const feedings = await Feeding.findAll({
       include: [
+        {
+          model: Food,
+          as: 'food',
+          attributes: ['id', 'food']
+        },
         {
           model: Pasture,
           as: 'pasture',
@@ -49,11 +54,16 @@ exports.getFeedings = async (req, res) => {
   }
 }
 
-// Get a specific Cow by ID
-exports.getCowById = async (req, res) => {
+// Get a specific Feeding by ID
+exports.getFeedingById = async (req, res) => {
   try {
-    const cow = await Cow.findByPk(req.params.id, {
+    const feeding = await Feeding.findByPk(req.params.id, {
       include: [
+        {
+          model: Food,
+          as: 'food',
+          attributes: ['id', 'food']
+        },
         {
           model: Pasture,
           as: 'pasture',
@@ -72,8 +82,8 @@ exports.getCowById = async (req, res) => {
       ]
     })
 
-    if (!cow) return res.status(404).json({ error: 'Cow not found' })
-    res.json(cow)
+    if (!feeding) return res.status(404).json({ error: 'Feeding record not found' })
+    res.json(feeding)
   } catch (error) {
     res.status(500).json({ error: error.message })
   }
@@ -85,13 +95,13 @@ exports.updateFeeding = async (req, res) => {
     const feeding = await Feeding.findByPk(req.params.id)
     if (!feeding) return res.status(404).json({ error: 'Feeding record not found' })
 
-    const { food, quantity, fed_date, cow_id } = req.body
+    const { food_id, quantity, fed_date, pasture_id } = req.body
 
     await feeding.update({
-      food,
+      food_id,
       quantity,
       fed_date,
-      cow_id,
+      pasture_id,
       updated_by: req.user.id
     })
 

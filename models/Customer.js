@@ -1,17 +1,21 @@
-// models/DailyMilkRecord.js
+// models/Customer.js
 module.exports = (sequelize, DataTypes) => {
-  const DailyMilkRecord = sequelize.define('DailyMilkRecord', {
-    morning_qty: {
+  const Customer = sequelize.define('Customer', {
+    first_name: {
       type: DataTypes.STRING,
-      allowNull: true,
-    },
-    evening_qty: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    record_date: {
-      type: DataTypes.DATEONLY,
       allowNull: false,
+    },
+    last_name: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    phone: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     user_id: {
       type: DataTypes.INTEGER,
@@ -22,22 +26,22 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
     },
   }, {
-    tableName: 'daily_milk_records',
+    tableName: 'customers',
     timestamps: true,
     underscored: true,
   });
 
-  DailyMilkRecord.associate = (models) => {
-    DailyMilkRecord.belongsTo(models.User, {
+  Customer.associate = (models) => {
+    Customer.belongsTo(models.User, {
       foreignKey: 'user_id',
       as: 'owner',
     });
 
-    DailyMilkRecord.belongsTo(models.User, {
+    Customer.belongsTo(models.User, {
       foreignKey: 'updated_by',
       as: 'updatedBy',
     });
   };
 
-  return DailyMilkRecord;
+  return Customer;
 };

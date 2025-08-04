@@ -2,34 +2,44 @@
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('feedings', {
+    await queryInterface.createTable('cow_sales', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      pasture_id: {
+      cow_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'pastures',
+          model: 'cows',
           key: 'id',
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
-      food: {
-        type: Sequelize.STRING,
-        allowNull: false,
+      customer_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'customers',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
       },
       quantity: {
         type: Sequelize.STRING,
-        allowNull: true,
-      },
-      fed_date: {
-        type: Sequelize.DATEONLY,
         allowNull: false,
+      },
+      unit_price: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      sales_date: {
+        type: Sequelize.DATEONLY,
+        allowNull: true,
       },
       user_id: {
         type: Sequelize.INTEGER,
@@ -65,6 +75,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('feedings');
+    await queryInterface.dropTable('cow_sales');
   },
 };

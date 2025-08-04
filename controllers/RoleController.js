@@ -1,4 +1,4 @@
-// controllers/UserController.js
+// controllers/RoleController.js
 
 const { User, Role } = require('../models')
 const fs = require('fs')
@@ -68,26 +68,12 @@ exports.createUser = async (req, res) => {
   }
 };
 
-// Get all users with pasture and user info
-exports.getAllUsers = async (req, res) => {
+// Get all roles with pasture and user info
+exports.getAllRoles = async (req, res) => {
   try {
-    const users = await User.findAll({
-      attributes: { exclude: ['password'] }
-    });
+    const roles = await Role.findAll();
 
-    const usersWithRoles = await Promise.all(
-      users.map(async (user) => {
-        const roles = await user.getRoles(); // Get roles using association
-        const roleNames = roles.map(role => role.name);
-
-        return {
-          ...user.toJSON(),
-          roles: roleNames
-        };
-      })
-    );
-
-    res.json(usersWithRoles);
+    res.json(roles);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
