@@ -32,6 +32,7 @@ db.Maternity = require('./Maternity')(sequelize, DataTypes)
 db.Customer = require('./Customer')(sequelize, DataTypes)
 db.MilkSales = require('./MilkSales')(sequelize, DataTypes)
 db.CowSales = require('./CowSales')(sequelize, DataTypes)
+db.ClinicalCare = require('./ClinicalCare')(sequelize, DataTypes)
 
 // Define relationships
 db.User.belongsToMany(db.Role, { through: 'user_roles' })

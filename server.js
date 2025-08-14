@@ -36,6 +36,7 @@ app.use('/api/maternities', authenticate, require('./routes/maternities'));
 app.use('/api/customers', authenticate, require('./routes/customers'));
 app.use('/api/milk-sales', authenticate, require('./routes/milkSales'));
 app.use('/api/cow-sales', authenticate, require('./routes/cowSales'));
+app.use('/api/clinical-cares', authenticate, require('./routes/clinicalCares'));
 
 //  Access uploaded files
 app.use('/uploads', express.static('uploads'));

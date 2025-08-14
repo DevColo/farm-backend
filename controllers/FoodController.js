@@ -7,13 +7,13 @@ const { Op } = require('sequelize')
 // Create Food
 exports.createFood = async (req, res) => {
   try {
-    const { food, quantity, description } = req.body
+    const { food, quantity, food_type } = req.body
     const userId = req.user.id
 
     const newFood = await Food.create({
       food,
       quantity,
-      description,
+      food_type,
       user_id: userId,
     })
 
@@ -82,12 +82,12 @@ exports.updateFood = async (req, res) => {
     const updatedFood = await Food.findByPk(req.params.id)
     if (!updatedFood) return res.status(404).json({ error: 'Food record not found' })
 
-    const { food, quantity, description } = req.body
+    const { food, quantity, food_type } = req.body
 
     await updatedFood.update({
       food,
       quantity,
-      description,
+      food_type,
       updated_by: req.user.id
     })
 

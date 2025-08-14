@@ -17,7 +17,7 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      description: {
+      food_type: {
         type: Sequelize.STRING,
         allowNull: true,
       },

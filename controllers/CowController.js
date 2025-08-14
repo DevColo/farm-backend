@@ -1,6 +1,6 @@
 // controllers/CowController.js
 
-const { Cow, Pasture, User, Feeding, Medication, Food, Maternity } = require('../models')
+const { Cow, Pasture, User, Feeding, Medication, Food, Maternity, ClinicalCare } = require('../models')
 const fs = require('fs')
 const { Op } = require('sequelize')
 
@@ -128,77 +128,98 @@ exports.getCowById = async (req, res) => {
       include: [
         {
           model: Pasture,
-          as: 'pasture',
-          attributes: ['id', 'pasture']
+          as: "pasture",
+          attributes: ["id", "pasture"],
         },
         {
           model: User,
-          as: 'owner',
-          attributes: ['id', 'first_name']
+          as: "owner",
+          attributes: ["id", "first_name"],
         },
         {
           model: User,
-          as: 'updatedBy',
-          attributes: ['id', 'first_name']
-        }
-      ]
-    });
-
-    if (!cow) return res.status(404).json({ error: 'Cow not found' });
-
-    // Append Feeding Record
-    const feedings = await Feeding.findAll({
-      where: { pasture_id: cow.pasture_id },
-      include: [
-        {
-          model: Food,
-          as: 'food',
-          attributes: ['id', 'food'],
+          as: "updatedBy",
+          attributes: ["id", "first_name"],
         },
       ],
     });
 
-    // Append Medication Record
+    if (!cow) return res.status(404).json({ error: "Cow not found" });
+
+    // 1️⃣ Get total cows in the same pasture
+    const totalCowsInPasture = await Cow.count({
+      where: { pasture_id: cow.pasture_id },
+    });
+
+    // 2️⃣ Get feedings for the pasture
+    let feedings = await Feeding.findAll({
+      where: { pasture_id: cow.pasture_id },
+      include: [
+        {
+          model: Food,
+          as: "food",
+          attributes: ["id", "food"],
+        },
+      ],
+    });
+
+    // 3️⃣ Add quantity_per_cow to each feeding
+    feedings = feedings.map((feeding) => {
+      const perCow = totalCowsInPasture > 0
+        ? (Number(feeding.quantity) / totalCowsInPasture)
+        : 0;
+
+      return {
+        ...feeding.toJSON(),
+        quantity_per_cow: perCow,
+      };
+    });
+
+    // 4️⃣ Get medications
     const medications = await Medication.findAll({
       where: { cow_id: cow.id },
     });
 
-    // Determine the association to include based on cow type
-    // Check cow type and fetch maternities accordingly
+    // 5️⃣ Get maternities based on cow type
     let maternities;
-
-    if (cow.type === 'Female') {
+    if (cow.type === "Female") {
       maternities = await Maternity.findAll({
         where: { cow_id: cow.id },
         include: [
           {
             model: Cow,
-            as: 'bull',
-            attributes: ['id', 'ear_tag'],
+            as: "bull",
+            attributes: ["id", "ear_tag"],
           },
         ],
       });
-    } else if (cow.type === 'Male') {
+    } else if (cow.type === "Male") {
       maternities = await Maternity.findAll({
         where: { bull_id: cow.id },
         include: [
           {
             model: Cow,
-            as: 'cow',
-            attributes: ['id', 'ear_tag'],
+            as: "cow",
+            attributes: ["id", "ear_tag"],
           },
         ],
       });
     } else {
-      maternities = []; // In case the type is undefined or doesn't match
+      maternities = [];
     }
 
+    // Get clinical care
+    const clinicalCares = await ClinicalCare.findAll({
+      where: { cow_id: cow.id },
+    });
 
+    // 6️⃣ Final response
     const cowWithDetails = {
       ...cow.toJSON(),
       feedings,
       medications,
-      maternities
+      maternities,
+      clinicalCares,
     };
 
     res.json(cowWithDetails);
@@ -206,6 +227,91 @@ exports.getCowById = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+// exports.getCowById = async (req, res) => {
+//   try {
+//     const cow = await Cow.findByPk(req.params.id, {
+//       include: [
+//         {
+//           model: Pasture,
+//           as: 'pasture',
+//           attributes: ['id', 'pasture']
+//         },
+//         {
+//           model: User,
+//           as: 'owner',
+//           attributes: ['id', 'first_name']
+//         },
+//         {
+//           model: User,
+//           as: 'updatedBy',
+//           attributes: ['id', 'first_name']
+//         }
+//       ]
+//     });
+
+//     if (!cow) return res.status(404).json({ error: 'Cow not found' });
+
+//     // Append Feeding Record
+//     const feedings = await Feeding.findAll({
+//       where: { pasture_id: cow.pasture_id },
+//       include: [
+//         {
+//           model: Food,
+//           as: 'food',
+//           attributes: ['id', 'food'],
+//         },
+//       ],
+//     });
+
+//     // Append Medication Record
+//     const medications = await Medication.findAll({
+//       where: { cow_id: cow.id },
+//     });
+
+//     // Determine the association to include based on cow type
+//     // Check cow type and fetch maternities accordingly
+//     let maternities;
+
+//     if (cow.type === 'Female') {
+//       maternities = await Maternity.findAll({
+//         where: { cow_id: cow.id },
+//         include: [
+//           {
+//             model: Cow,
+//             as: 'bull',
+//             attributes: ['id', 'ear_tag'],
+//           },
+//         ],
+//       });
+//     } else if (cow.type === 'Male') {
+//       maternities = await Maternity.findAll({
+//         where: { bull_id: cow.id },
+//         include: [
+//           {
+//             model: Cow,
+//             as: 'cow',
+//             attributes: ['id', 'ear_tag'],
+//           },
+//         ],
+//       });
+//     } else {
+//       maternities = []; // In case the type is undefined or doesn't match
+//     }
+
+
+//     const cowWithDetails = {
+//       ...cow.toJSON(),
+//       feedings,
+//       medications,
+//       maternities
+//     };
+
+//     res.json(cowWithDetails);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
 
 
 // Update cow by ID
@@ -443,13 +549,22 @@ exports.getClassCows = async (req, res) => {
 
       if (now.getDate() < dob.getDate()) months--;
 
+
       const ageClass = months >= 1 && months <= 11
-          ? 'Calf'
-          : months >= 12 && months <= 23
-          ? 'Yearling'
-          : cow.given_birth == '1'
-          ? 'Heifer'
-          : 'Adult';
+      ? 'Calf'
+      : months >= 12 && months < 23
+      ? 'Yearling'
+      : months >= 12 && months < 23 && cow.given_birth == '1'
+      ? 'Adult'
+      : cow.given_birth == '0' && cow.type == 'Female'
+      ? 'Heifer'
+      : 'Adult';
+          // ? 'Calf'
+          // : months >= 12 && months <= 23
+          // ? 'Yearling'
+          // : cow.given_birth == '1'
+          // ? 'Heifer'
+          // : 'Adult';
 
       return ageClass === req.params.class;
     });

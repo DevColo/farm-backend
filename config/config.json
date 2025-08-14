@@ -2,7 +2,7 @@
   "development": {
     "username": "root",
     "password": "project360",
-    "database": "farm_db",
+    "database": "jakaja_db",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },

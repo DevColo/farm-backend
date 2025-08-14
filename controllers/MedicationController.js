@@ -4,14 +4,17 @@ const { Op } = require('sequelize')
 // Create Medication
 exports.createMedication = async (req, res) => {
   try {
-    const { medication, reason, medication_date, cow_id } = req.body
+    const { medication, disease, medication_date, cow_id, diagnosis, symptoms, symptoms_date } = req.body
     const userId = req.user.id
 
     const newMedication = await Medication.create({
       medication,
-      reason,
+      disease,
       medication_date,
       cow_id,
+      diagnosis,
+      symptoms,
+      symptoms_date,
       user_id: userId,
     })
 
@@ -55,13 +58,16 @@ exports.updateMedication = async (req, res) => {
     const medic = await Medication.findByPk(req.params.id)
     if (!medic) return res.status(404).json({ error: 'Medication record not found' })
 
-    const { medication, reason, medication_date, cow_id } = req.body
+    const { medication, disease, medication_date, cow_id, diagnosis, symptoms, symptoms_date } = req.body
 
     await medic.update({
       medication,
-      reason,
+      disease,
       medication_date,
       cow_id,
+      diagnosis,
+      symptoms,
+      symptoms_date,
       updated_by: req.user.id
     })
 

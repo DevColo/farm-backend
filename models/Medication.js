@@ -5,17 +5,29 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    reason: {
+    disease: {
       type: DataTypes.STRING,
       allowNull: true,
     },
     medication_date: {
-      type: DataTypes.DATEONLY,
-      allowNull: false,
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     cow_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
+    },
+    diagnosis: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    symptoms: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    symptoms_date: {
+      type: DataTypes.DATEONLY,
+      allowNull: true,
     },
     user_id: {
       type: DataTypes.INTEGER,

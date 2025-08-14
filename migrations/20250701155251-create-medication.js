@@ -21,15 +21,27 @@ module.exports = {
       },
       medication: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
-      reason: {
+      disease: {
         type: Sequelize.STRING,
         allowNull: true,
       },
       medication_date: {
-        type: Sequelize.DATEONLY,
-        allowNull: false,
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      diagnosis: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      symptoms: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      symptoms_date: {
+        type: Sequelize.STRING,
+        allowNull: true,
       },
       user_id: {
         type: Sequelize.INTEGER,
